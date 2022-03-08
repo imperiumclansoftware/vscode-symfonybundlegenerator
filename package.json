@@ -1,7 +1,7 @@
 {
   "name": "symfonybundlegenerator",
-  "displayName": "SymfonyBundleGenerator",
-  "description": "Generate a basic symfony bundle",
+  "displayName": "Symfony Generator",
+  "description": "Generate a basic symfony structure element",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.64.0"
@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:symfonybundlegenerator.GenerateSfBundle"
+    "onCommand:symfonybundlegenerator.GenerateSfBundle",
+    "onCommand:symfonybundlegenerator.GenerateSfController"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,8 +19,24 @@
       {
         "command": "symfonybundlegenerator.GenerateSfBundle",
         "title": "Generate Symfony Bundle"
+      },
+      {
+        "command": "symfonybundlegenerator.GenerateSfController",
+        "title": "Generate Symfony Controller"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "symfonybundlegenerator.GenerateSfBundle",
+          "group": "Symfony Generator"
+        },
+        {
+          "command": "symfonybundlegenerator.GenerateSfController",
+          "group": "Symfony Generator"
+        }
+      ]
+    }
   },
   "scripts": {
     "compile": "tsc -p ./",
@@ -28,10 +45,11 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./"
+    "test-compile": "tsc -p ./",
+    "deploy": "vsce publish --yarn"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -45,7 +63,8 @@
     "eslint": "^8.9.0",
     "glob": "^7.2.0",
     "mocha": "^9.2.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vsce": "^2.6.7"
   },
   "dependencies": {
     "intelephense": "^1.8.2"
