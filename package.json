@@ -1,8 +1,9 @@
 {
   "name": "symfonybundlegenerator",
   "displayName": "Symfony Generator",
-  "description": "Generate a basic symfony structure element",
-  "version": "0.0.1",
+  "description": "Generate basic symfony structure element",
+  "version": "0.0.2",
+  "publisher": "ImperiumClanSoftware", 
   "engines": {
     "vscode": "^1.64.0"
   },
@@ -11,29 +12,88 @@
   ],
   "activationEvents": [
     "onCommand:symfonybundlegenerator.GenerateSfBundle",
-    "onCommand:symfonybundlegenerator.GenerateSfController"
+    "onCommand:symfonybundlegenerator.GenerateSfController",
+    "onCommand:symfonybundlegenerator.GenerateSfService",
+    "onCommand:symfonybundlegenerator.GenerateSfEntity",
+    "onCommand:symfonybundlegenerator.GenerateSfRepository",
+    "onCommand:symfonybundlegenerator.GenerateSfCommand",
+    "onView:phpProperties"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "symfonybundlegenerator.GenerateSfBundle",
-        "title": "Generate Symfony Bundle"
+        "title": "Generate Bundle"
       },
       {
         "command": "symfonybundlegenerator.GenerateSfController",
-        "title": "Generate Symfony Controller"
+        "title": "Generate Controller"
+      },
+      {
+        "command": "symfonybundlegenerator.GenerateSfService",
+        "title": "Generate Service"
+      }
+      ,
+      {
+        "command": "symfonybundlegenerator.GenerateSfEntity",
+        "title": "Generate Entity"
+      },
+      {
+        "command": "symfonybundlegenerator.GenerateSfRepository",
+        "title": "Generate Repository"
+      },
+      {
+        "command": "symfonybundlegenerator.GenerateSfCommand",
+        "title": "Generate Command"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "command": "symfonybundlegenerator.GenerateSfBundle",
+          "submenu": "symfony.generator",
           "group": "Symfony Generator"
+        }
+      ],
+      "symfony.generator": [
+        {
+          "command": "symfonybundlegenerator.GenerateSfBundle",
+          "group": "Symfony Generator Global"
         },
         {
           "command": "symfonybundlegenerator.GenerateSfController",
-          "group": "Symfony Generator"
+          "group": "Symfony Generator Element"
+        },
+        {
+          "command": "symfonybundlegenerator.GenerateSfService",
+          "group": "Symfony Generator Element"
+        },
+        {
+          "command": "symfonybundlegenerator.GenerateSfEntity",
+          "group": "Symfony Generator Element"
+        },
+        {
+          "command": "symfonybundlegenerator.GenerateSfRepository",
+          "group": "Symfony Generator Element"
+        },
+        {
+          "command": "symfonybundlegenerator.GenerateSfCommand",
+          "group": "Symfony Generator Element"
+        }
+      ]
+      
+    },
+    "submenus": [
+      {
+        "id": "symfony.generator",
+        "label": "Symfony Generator"
+      }
+    ],
+    "views" : {
+      "explorer": [
+        {
+          "id": "phpProperties",
+          "name": "PHP Properties"
         }
       ]
     }

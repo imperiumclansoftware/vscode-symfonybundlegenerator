@@ -1,3 +1,5 @@
+import * as vscode from 'vscode';
+
 
 export function getComposerContent(creatorId: string,bundleName: string): string
 {
@@ -31,7 +33,9 @@ export function getComposerContent(creatorId: string,bundleName: string): string
 
 export function getGitIgnore(): string
 {
-    return  '/.vscode//vendor/';
+    return  `
+    /.vscode/
+    /vendor/`;
 }
 
 export function getReadme(creatorId: string,bundleName: string): string
@@ -231,4 +235,81 @@ export function generatebaseNamespace(creatorId: string,bundleName: string): str
 
 export function ucFirst(string: string): string {
 	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export enum ServicePart {
+    command,
+    service,
+    controller,
+    twig,
+    form
+};
+
+export async function enabledServicePart(servicePart: ServicePart)
+{
+    if(vscode.workspace.workspaceFolders)
+    {
+        const wsPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        const wsedit = new vscode.WorkspaceEdit();
+        const filePath = vscode.Uri.file(`${wsPath}/config/services.yaml`);    
+        vscode.window.showInformationMessage(filePath.toString());
+        const doc =  await vscode.workspace.openTextDocument(filePath);
+        
+        var part: string|null = null;
+        switch(servicePart)
+        {
+            case 0 :
+                part = "../src/Command"; 
+                break;
+            case 1:
+                part = "../src/Service";
+                break;
+            case 2:
+                part = "../src/Controller";
+                break;
+            case 3:
+                part = "../src/Twig";
+                break;
+            case 4:
+                    part = "../src/Form";
+                    break;
+            default:
+                part = null;
+                break;
+        }
+
+        if(part !== null)
+        {
+            
+            const lines =doc.getText().split("\n");
+
+            for(const line in lines)
+            {
+                if(lines[line].includes(part))
+                {
+                    lines[Number.parseInt(line) -1] = lines[Number.parseInt(line) -1].replace('#','');
+                    lines[Number.parseInt(line)] = lines[Number.parseInt(line)].replace('#','');
+                    lines[Number.parseInt(line) + 1] = lines[Number.parseInt(line) +1].replace('#','');
+                }
+            }
+
+            const finalContent = lines.join("\n");
+            wsedit.delete(filePath,new vscode.Range(doc.lineAt(0).range.start,doc.lineAt(doc.lineCount - 1).range.end));
+            wsedit.insert(filePath,new vscode.Position(0,0),finalContent);
+            await vscode.workspace.applyEdit(wsedit);
+
+            try {
+                await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider', { uri: filePath });
+            }
+            catch { }
+
+            const fileSaved = await doc.save();
+            if (fileSaved) {
+                vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+            }
+
+            vscode.window.showInformationMessage('Enabled service part ' + servicePart.toString());
+        }
+        
+    }
 }

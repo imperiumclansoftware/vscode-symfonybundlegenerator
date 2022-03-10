@@ -1,8 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import { Console } from 'console';
 import * as vscode from 'vscode';
-import { getBundleConfiguration, getBundleContent, getBundleExtension, getComposerContent, getDevReadme, getDoctrineConfig, getGitIgnore, getReadme, getRoutesConfig, getSecurityConfig, getServicesConfig, ucFirst } from './bundle';
+import { enabledServicePart, getBundleConfiguration, getBundleContent, getBundleExtension, getComposerContent, getDevReadme, getDoctrineConfig, getGitIgnore, getReadme, getRoutesConfig, getSecurityConfig, getServicesConfig, ServicePart, ucFirst } from './bundle';
+import { getCommandContent } from './command';
 import { getControllerContent, getControllerTwigContent } from './controller';
+import { getEntityContent } from './entity';
+import { PhpPropertiesProvider } from './phpPropertiesProvider';
+import { getRepositoryContent } from './repository';
+import { getServiceContent } from './service';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -45,17 +51,135 @@ export function activate(context: vscode.ExtensionContext) {
     
         if (controllerName && baseNamespace) {
     
-            // Generate files for bundle
+            // Generate files for controller
             await generateFile(`src/Controller/${ucFirst(controllerName)}Controller.php`,getControllerContent(baseNamespace,controllerName));
             await generateFile(`templates/${controllerName.toLowerCase()}/${controllerName.toLowerCase()}.html.twig`,getControllerTwigContent(baseNamespace,controllerName));
+			await enabledServicePart(ServicePart.controller);
         }
     
     });
 
-	context.subscriptions.push(controller);
-	
+	let service = vscode.commands.registerCommand('symfonybundlegenerator.GenerateSfService', async () => {
+        const serviceName = await vscode.window.showInputBox({
+            placeHolder: "Service Name",
+            prompt: "Name of the Symfony Service",
+        });
+        
+        const baseNamespace = await getComposerNamespace();
+        
+    
+        if (serviceName && baseNamespace) {
+    
+            // Generate files for service
+            await generateFile(`src/Service/${ucFirst(serviceName)}Service.php`,getServiceContent(baseNamespace,serviceName));
+			await enabledServicePart(ServicePart.service);
+        }
+    
+    });
 
+	let entity = vscode.commands.registerCommand('symfonybundlegenerator.GenerateSfEntity', async () => {
+        const entityName = await vscode.window.showInputBox({
+            placeHolder: "Entity Name",
+            prompt: "Name of the Symfony Doctrine Entity",
+        });
+        
+        const baseNamespace = await getComposerNamespace();
+        
+    
+        if (entityName && baseNamespace) {
+    
+            // Generate files for entity
+            await generateFile(`src/Entity/${ucFirst(entityName)}.php`,getEntityContent(baseNamespace,entityName));
+			await generateFile(`src/Repository/${ucFirst(entityName)}Repository.php`,getRepositoryContent(baseNamespace,entityName));
+        }
+    
+    });
+
+	let repository = vscode.commands.registerCommand('symfonybundlegenerator.GenerateSfRepository', async () => {
+        const entityName = await vscode.window.showInputBox({
+            placeHolder: "Entity Name",
+            prompt: "Name of the Symfony Doctrine Entity for this repository",
+        });
+        
+        const baseNamespace = await getComposerNamespace();
+        
+    
+        if (entityName && baseNamespace) {
+    
+            // Generate files for repository
+			await generateFile(`src/Repository/${ucFirst(entityName)}Repository.php`,getRepositoryContent(baseNamespace,entityName));
+        }
+    
+    });
+
+	let command = vscode.commands.registerCommand('symfonybundlegenerator.GenerateSfCommand', async () => {
+        const commandName = await vscode.window.showInputBox({
+            placeHolder: "Command Name",
+            prompt: "Name of the Symfony Command",
+        });
+        
+        const baseNamespace = await getComposerNamespace();
+        
+    
+        if (commandName && baseNamespace) {
+    
+            // Generate files for repository
+			await generateFile(`src/Command/${ucFirst(commandName)}Command.php`,getCommandContent(baseNamespace,commandName));
+			await enabledServicePart(ServicePart.command);
+        }
+    
+    });
+
+	context.subscriptions.push(command);
+	context.subscriptions.push(repository);
+	context.subscriptions.push(entity);
+	context.subscriptions.push(service);
+	context.subscriptions.push(controller);
 	context.subscriptions.push(bundle);
+	
+	let phpController = new PhpPropertiesController();
+
+	context.subscriptions.push(phpController);
+}
+
+class PhpPropertiesController {
+	private _disposable: vscode.Disposable;
+	constructor(){
+		let subscriptions: vscode.Disposable[] = [];
+		vscode.window.onDidChangeActiveTextEditor(this._onEvent,this,subscriptions);
+		//vscode.window.onDidChangeTextEditorSelection(this._onEvent,this,subscriptions);
+
+		if(vscode.window.activeTextEditor !== undefined)
+		{
+			vscode.window.createTreeView('phpProperties',{
+	 			treeDataProvider: new PhpPropertiesProvider(vscode.window.activeTextEditor)
+			});
+		}
+
+		this._disposable = vscode.Disposable.from(...subscriptions);
+	}
+
+	dispose() {
+		this._disposable.dispose();
+	}
+
+	private _onEvent(editor: vscode.TextEditor|undefined|void)
+	{
+		console.info('Update php properties.');
+		if(editor)
+		{
+			
+			vscode.window.createTreeView('phpProperties',{
+				treeDataProvider: new PhpPropertiesProvider(editor)
+		   });
+		}
+		else
+		{
+			vscode.window.createTreeView('phpProperties',{
+				treeDataProvider: new PhpPropertiesProvider(vscode.window.activeTextEditor)
+		   });
+		}
+	}
 }
 
 async function generateBundleFiles(creatorId: string, bundleName: string) {
@@ -93,12 +217,14 @@ export async function generateFile(filename: string, content: string): Promise<v
 
 		wsedit.createFile(filePath, { ignoreIfExists: true });
 		wsedit.insert(filePath, new vscode.Position(0, 0), content);
+		
+
+		await vscode.workspace.applyEdit(wsedit);
+
 		try {
 			await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider', { uri: filePath });
 		}
 		catch { }
-
-		await vscode.workspace.applyEdit(wsedit);
 
 		const doc = await vscode.workspace.openTextDocument(filePath);
 
@@ -155,6 +281,9 @@ export async function getComposerNamespace()
 
 	return null;
 }
+
+
+
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
