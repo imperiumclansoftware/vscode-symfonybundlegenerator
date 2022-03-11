@@ -17,6 +17,7 @@
     "onCommand:symfonybundlegenerator.GenerateSfEntity",
     "onCommand:symfonybundlegenerator.GenerateSfRepository",
     "onCommand:symfonybundlegenerator.GenerateSfCommand",
+    "onCommand:symfonybundlegenerator.GeneratePhpGetterSetter",
     "onView:phpProperties"
   ],
   "main": "./out/extension.js",
@@ -46,6 +47,11 @@
       {
         "command": "symfonybundlegenerator.GenerateSfCommand",
         "title": "Generate Command"
+      },
+      {
+        "command": "symfonybundlegenerator.GeneratePhpGetterSetter",
+        "title": "Generate Getters & Setters",
+        "icon" : "$(export)"
       }
     ],
     "menus": {
@@ -79,6 +85,13 @@
         {
           "command": "symfonybundlegenerator.GenerateSfCommand",
           "group": "Symfony Generator Element"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "symfonybundlegenerator.GeneratePhpGetterSetter",
+          "when": "view == phpProperties",
+          "group": "navigation"
         }
       ]
       

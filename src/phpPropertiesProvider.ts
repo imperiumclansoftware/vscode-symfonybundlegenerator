@@ -4,7 +4,7 @@ import { PhpProperties } from './PhpProperties';
 
 
 export class PhpPropertiesProvider implements vscode.TreeDataProvider<PhpProperties> {
-	constructor(private textEditor : vscode.TextEditor|undefined) {}
+	constructor(private textEditor : vscode.TextEditor|vscode.TextDocument|undefined) {}
 
     onDidChangeTreeData?: vscode.Event<any> | undefined;
 
@@ -14,38 +14,59 @@ export class PhpPropertiesProvider implements vscode.TreeDataProvider<PhpPropert
 
     getChildren(element?: PhpProperties): vscode.ProviderResult<PhpProperties[]> {
 
-        if(this.textEditor)
+        if(this.textEditor && (this.textEditor as vscode.TextEditor).document)
         {
-            return Promise.resolve(this.getProperties(this.textEditor.document.getText()));
+            if(this.textEditor)
+            {
+                return Promise.resolve(this.getProperties(getTextFromEditor(this.textEditor as vscode.TextEditor)));
+            }
         }
+        else if(this.textEditor && (this.textEditor as vscode.TextDocument).getText)
+        {
+            if(this.textEditor as vscode.TextDocument)
+            {
+                return Promise.resolve(this.getProperties(getTextFromDocument(this.textEditor as vscode.TextDocument)));
+            }
+        }
+        else
+        {
+            return null;
+        }
+        
     }
 
     private getProperties(text: string): PhpProperties[]
     {
-        const regex = /(?:(?:private)|(?:protected))(?:(?: \S+ )|(?:\s+))(?:\$)(\w*)/gm;
-        var found=null;
-        var result=[];
-
-        while ((found = regex.exec(text)) !== null) {
-            // This is necessary to avoid infinite loops with zero-width matches
-            if (found.index === regex.lastIndex) {
-                regex.lastIndex++;
-            }
-            
-            // The result can be accessed through the `m`-variable.
-            found.forEach((match, groupIndex) => {
-                if(groupIndex === 1)
-                {
-                    result.push(new PhpProperties(match,vscode.TreeItemCollapsibleState.None));
-                }
-            });
-        }
-
+        var properties: string[]=PhpProperties.getProperties(text);
+        var result: PhpProperties[]=[];
+       
+        properties.forEach((property: string) => {
+            result.push(new PhpProperties(property,vscode.TreeItemCollapsibleState.None,text));                  
+        });
+    
         if(result.length === 0)
         {
-            result.push(new PhpProperties('- No properties -',vscode.TreeItemCollapsibleState.None));
+            result.push(new PhpProperties('- No properties -',vscode.TreeItemCollapsibleState.None,text));
         }
         
         return result;
     }
+}
+
+function getTextFromEditor(editor: vscode.TextEditor): string
+{
+    if(editor && editor.document)
+    {
+        return editor.document.getText();
+    }
+    return '';
+}
+
+function getTextFromDocument(editor: vscode.TextDocument): string
+{
+    if(editor)
+    {
+        return editor.getText();
+    }
+    return '';
 }
