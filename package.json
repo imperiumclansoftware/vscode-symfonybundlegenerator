@@ -2,10 +2,10 @@
   "name": "symfonybundlegenerator",
   "displayName": "Symfony Generator",
   "description": "Generate basic symfony structure element",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "ImperiumClanSoftware", 
   "engines": {
-    "vscode": "^1.64.0"
+    "vscode": "^1.63.2"
   },
   "categories": [
     "Other"
@@ -128,7 +128,7 @@
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "14.x",
-    "@types/vscode": "^1.64.0",
+    "@types/vscode": "^1.63.2",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "@vscode/test-electron": "^2.1.2",
@@ -140,6 +140,6 @@
     "vsce": "^2.6.7"
   },
   "dependencies": {
-    "intelephense": "^1.8.2"
+    "intelephense": "^1.8"
   }
 }
