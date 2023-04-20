@@ -2,8 +2,13 @@
   "name": "symfonybundlegenerator",
   "displayName": "Symfony Generator",
   "description": "Generate basic symfony structure element",
-  "version": "0.0.3",
-  "publisher": "ImperiumClanSoftware", 
+  "version": "0.0.5",
+  "icon": "assets/images/logo.png",
+  "publisher": "ImperiumClanSoftware",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imperiumclansoftware/vscode-symfonybundlegenerator"
+  },
   "engines": {
     "vscode": "^1.63.2"
   },

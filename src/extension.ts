@@ -258,6 +258,7 @@ async function generateBundleFiles(creatorId: string, bundleName: string) {
 		await generateFile(`src/${flcBundleName}Bundle.php`, getBundleContent(creatorId, bundleName));
 		await generateFile('src/DependencyInjection/Configuration.php', getBundleConfiguration(creatorId, bundleName));
 		await generateFile(`src/DependencyInjection/${flcBundleName}Extension.php`, getBundleExtension(creatorId, bundleName));
+		await generateFile(`src/Entity/.gitkeep`, ``);
 		// Generate config files
 		await generateFile('config/security.yaml', getSecurityConfig(creatorId, bundleName));
 		await generateFile('config/doctrine.yaml', getDoctrineConfig(creatorId, bundleName));

@@ -6,7 +6,7 @@ export function getComposerContent(creatorId: string,bundleName: string): string
     const baseNamespace = generatebaseNamespace(creatorId,bundleName);
     const composerContent = {
         "name": `${creatorId.toLowerCase()}/${bundleName.toLowerCase()}-bundle`,
-        "description": "A new bundle",
+        "description": "A new bundle generate by symfony-generator",
         "type": "symfony-bundle",
         "version": "0.0.1",
         "license": "MIT",
@@ -17,14 +17,12 @@ export function getComposerContent(creatorId: string,bundleName: string): string
         },
         "require": {
             "symfony/framework-bundle": "^5|^6",
-            "symfony/config": "^5",
-            "symfony/dependency-injection": "^5",
-            "symfony/routing": "^5",
-            "symfony/form": "^5",
-            "doctrine/orm": "^2.8",
-            "twig/twig": "^3.3",
-            "symfony/doctrine-bridge": "^5",
-            "symfony/http-client": "^5"
+            "symfony/config": "^5|^6",
+            "symfony/dependency-injection": "^5|^6",
+            "symfony/routing": "^5|^6",
+            "symfony/form": "^5|^6",
+            "symfony/orm-pack": "^2",
+            "twig/twig": "^2.12|^3",
         }
     };
 
@@ -34,8 +32,9 @@ export function getComposerContent(creatorId: string,bundleName: string): string
 export function getGitIgnore(): string
 {
     return  `
-    /.vscode/
-    /vendor/`;
+/.vscode/
+/vendor/
+`;
 }
 
 export function getReadme(creatorId: string,bundleName: string): string
@@ -51,7 +50,7 @@ export function getDevReadme(creatorId: string,bundleName: string, workspacePath
         "repositories":[
             {
                 "type": "path",
-                "url": `${ucFirst(workspacePath.toString()) + '\\'}`
+                "url": `${ucFirst(workspacePath.toString()) + '/'}`
             }
         ]
     };
@@ -208,21 +207,11 @@ export function getServicesConfig(creatorId: string,bundleName: string): string
     _defaults:
         autowire: true
         autoconfigure: true
-    #${baseNamespace}\\Controller\\:
-        #resource: "../src/Controller"
-        #tags: ['controller.services_arguments']
-    #${baseNamespace}\\Service\\:
-        #resource: "../src/Service"
-        #tags: ['controller.services_arguments']
-    #${baseNamespace}\\Command\\:
-        #resource: "../src/Command"
-        #tags: ['controller.services_arguments']
-    #${baseNamespace}\\Twig\\:
-        #resource: "../src/Twig"
-        #tags: ['controller.services_arguments']
-    #${baseNamespace}\\Form\\:
-        #resource: "../src/Form"
-        #tags: ['controller.services_arguments']`;
+    ${baseNamespace}\\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'`;
 }
 
 export function generatebaseNamespace(creatorId: string,bundleName: string): string
