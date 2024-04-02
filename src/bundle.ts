@@ -16,13 +16,13 @@ export function getComposerContent(creatorId: string,bundleName: string): string
             }
         },
         "require": {
-            "symfony/framework-bundle": "^5|^6",
-            "symfony/config": "^5|^6",
-            "symfony/dependency-injection": "^5|^6",
-            "symfony/routing": "^5|^6",
-            "symfony/form": "^5|^6",
-            "symfony/orm-pack": "^2",
-            "twig/twig": "^2.12|^3",
+            "symfony/framework-bundle": "^6",
+            "symfony/config": "^6",
+            "symfony/dependency-injection": "^6",
+            "symfony/routing": "^6",
+            "twig/twig": "^3.3",
+            "symfony/http-client": "^6",
+            "symfony/orm-pack": "^2.4"
         }
     };
 
@@ -184,7 +184,7 @@ export function getDoctrineConfig(creatorId: string,bundleName: string): string
         mappings:
             ${flcBundleName}Bundle:
                 is_bundle: true
-                type: annotation
+                type: attribute
                 dir: 'src/Entity'
                 prefix: '${baseNamespace}\\Entity'
                 alias: ${flcBundleName}
@@ -195,7 +195,7 @@ export function getRoutesConfig(creatorId: string,bundleName: string): string
 {
     return `controllers:
     resource: ../src/Controller/
-    type: annotation
+    type: attribute
     `;
 }
 
