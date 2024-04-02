@@ -2,7 +2,7 @@
   "name": "symfonybundlegenerator",
   "displayName": "Symfony Generator",
   "description": "Generate basic symfony structure element",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "icon": "assets/images/logo.png",
   "publisher": "ImperiumClanSoftware",
   "repository": {
